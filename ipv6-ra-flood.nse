@@ -13,7 +13,6 @@ description = [[ Generates a flood of Router Adverisments (RA) with randomized s
 -- n/a
 
 author = "Adam Števko"
-copyright = "Adam Števko"
 license = "Same as Nmap--See http://nmap.org/book/man-legal.html"
 categories = {"dos", "intrusive"}
 
@@ -140,7 +139,7 @@ local function broadcast_on_interface(iface)
 		local src_mac = packet.mactobin(random_mac()) 
 		local src_ip6_addr = packet.mac_to_lladdr(src_mac)
 		
-		local ula_prefix = packet.ip6tobin(get_random_prefix())
+		local prefix = packet.ip6tobin(get_random_prefix())
 		
 		local packet = packet.Frame:new()
 
@@ -149,7 +148,7 @@ local function broadcast_on_interface(iface)
 		packet.ip_bin_src = src_ip6_addr
 		packet.ip_bin_dst = dst_ip6_addr
 		
-		local icmpv6_payload = build_router_advert(src_mac, ula_prefix, prefix_len, valid_time, preffered_time, mtu)
+		local icmpv6_payload = build_router_advert(src_mac, prefix, prefix_len, valid_time, preffered_time, mtu)
 		packet:build_icmpv6_header(134, 0, icmpv6_payload)
 		packet:build_ipv6_packet()
 		packet:build_ether_frame()
