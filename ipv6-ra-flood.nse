@@ -1,3 +1,10 @@
+local nmap = require "nmap"
+local packet = require "packet"
+local stdnse = require "stdnse"
+local math = require "math"
+local string = require "string"
+local os = require "os"
+
 description = [[ Generates a flood of Router Adverisments (RA) with randomized source MAC address and annouced IPv6 prefixes causing machines to be DoSed.
 ]]
 
@@ -15,12 +22,6 @@ description = [[ Generates a flood of Router Adverisments (RA) with randomized s
 author = "Adam Števko"
 license = "Same as Nmap--See http://nmap.org/book/man-legal.html"
 categories = {"dos", "intrusive"}
-
-require "nmap"
-require "packet"
-require "stdnse"
-require "math"
-require "string"
 
 try = nmap.new_try()
 
