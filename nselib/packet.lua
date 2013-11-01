@@ -731,12 +731,28 @@ function Packet:ipv6_ext_header_parse(force_continue)
 	self.ip6_data_offset = self.ip6_data_offset + ext_hdr_len
 	self.ip6_nhdr = self:u8(self.ip6_data_offset)
 end
+
 --- Set the payload length field.
 -- @param plen Payload length.
 function Packet:ip6_set_plen(plen)
 	self:set_u16(self.ip6_offset + 4, plen)
 	self.ip6_plen = plen
 end
+
+--- Set the Next Header field.
+-- @param nhdr Next header value.
+function Packet:ip6_set_nhdr(nhdr)
+	self:set_u8(self.ip6_offset + 6, nhdr)
+	self.ip6_nhdr = nhdr
+end
+
+--- Set the Hop Limit field.
+-- @param hlimit Hop Limit value.
+function Packet:ip6_set_hlimit(hlimit)
+	self:set_u8(self.ip6_offset + 7, hlimit)
+	self.ip6_hlimit = hlimit
+end
+
 --- Set the header length field.
 function Packet:ip_set_hl(len)
 	self:set_u8(self.ip_offset + 0, bit.bor(bit.lshift(self.ip_v, 4), bit.band(len, 0x0F)))
