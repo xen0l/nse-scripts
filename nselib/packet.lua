@@ -714,7 +714,7 @@ function Packet:ip6_parse(force_continue)
 	self.ip6_fl	= bit.band(self:u8(self.ip6_offset + 1), 0x0F)*65536 + self:u16(self.ip6_offset + 2)
 	self.ip6_plen	= self:u16(self.ip6_offset + 4)
 	self.ip6_nhdr	= self:u8(self.ip6_offset + 6)
-	self.ip6_hlimt	= self:u8(self.ip6_offset + 7)
+	self.ip6_hlimit	= self:u8(self.ip6_offset + 7)
 	self.ip_bin_src = self:raw(self.ip6_offset + 8, 16)
 	self.ip_bin_dst = self:raw(self.ip6_offset + 24, 16)
 	self.ip_src = toipv6(self.ip_bin_src)
@@ -732,15 +732,15 @@ function Packet:ipv6_ext_header_parse(force_continue)
 	self.ip6_nhdr = self:u8(self.ip6_data_offset)
 end
 
---- Set the payload length field.
--- @param plen Payload length.
+--- Set the Payload Length field.
+-- @param plen Payload Length.
 function Packet:ip6_set_plen(plen)
 	self:set_u16(self.ip6_offset + 4, plen)
 	self.ip6_plen = plen
 end
 
 --- Set the Next Header field.
--- @param nhdr Next header value.
+-- @param nhdr Next Header value.
 function Packet:ip6_set_nhdr(nhdr)
 	self:set_u8(self.ip6_offset + 6, nhdr)
 	self.ip6_nhdr = nhdr
