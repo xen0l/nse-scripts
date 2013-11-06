@@ -919,13 +919,50 @@ function Packet:icmpv6_parse(force_continue)
 	if #self.buf < self.icmpv6_offset + 8 then -- let's say 8 bytes minimum
 		return false
 	end
+
 	self.icmpv6 = true
 	self.icmpv6_type		= self:u8(self.icmpv6_offset + 0)
 	self.icmpv6_code		= self:u8(self.icmpv6_offset + 1)
 
 	if self.icmpv6_type == ND_NEIGHBOR_SOLICIT then
 		self.ns_target = self:raw(self.icmpv6_offset + 8, 16)
+
+		-- Check for ICMPv6 Options and parse them
+		if #self.buf == 72 then
+			self.opt_type = self:u8(self.icmpv6_offset + 24, 1)
+			self.source_lla = string.format("%02x:%02x:%02x:%02x:%02x:%02x", 
+											self:u8(self.icmpv6_offset + 26, 1),
+											self:u8(self.icmpv6_offset + 27, 1), 
+											self:u8(self.icmpv6_offset + 28, 1),
+											self:u8(self.icmpv6_offset + 29, 1),
+											self:u8(self.icmpv6_offset + 30, 1),
+											self:u8(self.icmpv6_offset + 31, 1)
+										)
+		end
 	end
+
+	if self.icmpv6_type == ND_NEIGHBOR_ADVERT then	
+		self.na_target = self:raw(self.icmpv6_offset + 8, 16)
+
+		-- Check for ICMPv6 Options and parse them
+		if #self.buf == 72 then
+			self.opt_type = self:u8(self.icmpv6_offset + 24, 1)
+			self.target_lla = string.format("%02x:%02x:%02x:%02x:%02x:%02x", 
+											self:u8(self.icmpv6_offset + 26, 1),
+											self:u8(self.icmpv6_offset + 27, 1), 
+											self:u8(self.icmpv6_offset + 28, 1),
+											self:u8(self.icmpv6_offset + 29, 1),
+											self:u8(self.icmpv6_offset + 30, 1),
+											self:u8(self.icmpv6_offset + 31, 1)
+										)
+		end
+	end
+
+	if self.icmpv6_type == ND_REDIRECT then
+		self.rdr_target = self:raw(self.icmpv6_offset + 8, 16)
+		self.rdr_destination = self:raw(self.icmpv6_offset + 24, 16)
+	end
+
 	return true
 end
 
