@@ -654,4 +654,67 @@ hex_to_bin = function( hex )
 
 end
 
+-- The original code of is_ipv6 and is_ipv4 functions is based on https://en.wikipedia.org/wiki/Module:IPAddress. 
+-- I slightly modified it for consistent look with the rest of NSE libraries.
+
+--- Function to validate IPv6 address
+-- @param ip string representing IPv6 address
+-- @return tell if ip is valid IPv6 address
+function is_ipv6(ip)
+    
+    local dcolon, groups
+
+    if type(ip) ~= "string"
+        or ip:len() == 0
+        or ip:find("[^:%x]") -- only colon and hex digits are legal chars
+        or ip:find("^:[^:]") -- can begin or end with :: but not with single :
+        or ip:find("[^:]:$")
+        or ip:find(":::")
+    then
+        return false
+    end
+
+    ip, dcolon = ip:gsub("::", ":")
+    
+    -- at most one ::
+    if dcolon > 1 then 
+      return false 
+    end 
+
+    -- prepend : if needed, upper
+    ip = ip:gsub("^:?", ":")
+
+    -- remove valid groups, and count them
+    ip, groups = ip:gsub(":%x%x?%x?%x?", "") 
+    
+    if ((dcolon == 1 and groups < 8 ) or ( dcolon == 0 and groups == 8 )) and
+       ((ip:len() == 0 or dcolon == 1 and ip == ":")) then -- might be one dangling : if original ended with ::
+          return true
+    else
+        return false
+    end
+end
+ 
+--- Function to validate IPv4 address
+-- @param ip string representing IPv4 address
+-- @return tell if ip is valid IPv4 address
+function is_ipv4(ip)
+    
+    local function legal(n) 
+      return (tonumber(n) or 256) < 256 and not n:match("^0%d") 
+    end
+ 
+    if type(ip) ~= "string" then 
+      return false 
+    end
+    
+    local p1, p2, p3, p4 = ip:match("^(%d+)%.(%d+)%.(%d+)%.(%d+)$")
+
+    if legal(p1) and legal(p2) and legal(p3) and legal(p4) then
+      return true
+    else
+      return false
+    end
+end
+
 return _ENV;
