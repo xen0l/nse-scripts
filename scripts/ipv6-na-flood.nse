@@ -11,6 +11,7 @@ description = [[ Generates a flood of Neighbour Advertisements (NA) with spoofed
 
 ---
 -- @args ipv6-na-flood.interface defines interface we should broadcast on
+-- @args ipv6-na-flood.target MAC address of the on-link host, we want to flood
 -- @args ipv6-na-flood.timeout runs the script until the timeout (in seconds) is reached (default: 30s). If timeout is zero, the script will run forever.
 --
 -- @usage

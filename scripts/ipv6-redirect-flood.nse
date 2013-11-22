@@ -6,11 +6,12 @@ local string = require "string"
 local os = require "os"
 local target = require "target"
 
-description = [[ Generates a flood of ICMPv6 redirects with spoofed data.]]
+description = [[ Generates a flood of ICMPv6 redirects with spoofed data. ]]
 
 ---
--- @args ipv6-na-flood.interface defines interface we should broadcast on
--- @args ipv6-na-flood.timeout runs the script until the timeout (in seconds) is reached (default: 30s). If timeout is zero, the script will run forever.
+-- @args ipv6-redirect-flood.interface defines interface we should broadcast on
+-- @args ipv6-redirect-flood.target MAC address of the on-link host, we want to flood.
+-- @args ipv6-redirect-flood.timeout runs the script until the timeout (in seconds) is reached (default: 30s). If timeout is zero, the script will run forever.
 --
 -- @usage
 -- nmap -6 --script ipv6-redirect-flood.nse --script-args 'target=<mac>' -e <interace>
