@@ -12,11 +12,13 @@ description = [[ Generates a flood of ICMPv6 redirects with spoofed data. ]]
 -- @args ipv6-redirect-flood.interface defines interface we should broadcast on
 -- @args ipv6-redirect-flood.target MAC address of the on-link host, we want to flood.
 -- @args ipv6-redirect-flood.timeout runs the script until the timeout (in seconds) is reached (default: 30s). If timeout is zero, the script will run forever.
+-- @args ipv6-redirect-flood.count number of packets to send
 --
 -- @usage
 -- nmap -6 --script ipv6-redirect-flood.nse --script-args 'target=<mac>' -e <interace>
 -- nmap -6 --script ipv6-redirect-flood.nse --script-args 'interface=<interface>,target=<mac>'
 -- nmap -6 --script ipv6-redirect-flood.nse --script-args 'interface=<interface>,target=<mac>,timeout=10s'
+-- nmap -6 --script ipv6-redirect-flood.nse --script-args 'interface=<interface>,target=<mac>,count=10'
 --
 -- @output
 -- n/a
@@ -101,6 +103,7 @@ local function broadcast_on_interface(iface)
 
 	local arg_timeout = stdnse.parse_timespec(stdnse.get_script_args(SCRIPT_NAME..".timeout") or "30s")
 	local arg_target = stdnse.get_script_args(SCRIPT_NAME..".target")
+	local arg_count = tonumber(stdnse.get_script_args(SCRIPT_NAME..".count")) or nil
 
 	local dnet = nmap.new_dnet()
 
@@ -136,6 +139,11 @@ local function broadcast_on_interface(iface)
 		try(dnet:ethernet_send(pkt.frame_buf))
 
 		counter = counter + 1
+
+		if arg_count ~= nil and arg_count > 0 and counter == arg_count then
+			stop = os.time()
+			break
+		end
 
 		if arg_timeout and arg_timeout > 0 and arg_timeout <= os.time() - start then
 			stop = os.time()
