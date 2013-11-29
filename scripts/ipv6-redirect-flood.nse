@@ -93,6 +93,15 @@ local function build_neigh_redirect(target_address, destination_address, target_
 	return icmpv6_payload
 end
 
+--- Generates random IPv6 prefix
+-- @return random string containing random IPv6 address
+local function get_random_ipv6_addr()
+	local random = string.format("2a01:%02x%02x:%02x%02x:%02x%02x::%02x%02x", math.random(256)-1, math.random(256)-1, math.random(256)-1, math.random(256)-1, math.random(256)-1, math.random(256)-1,
+																			  math.random(256)-1, math.random(256)-1)
+
+	return random
+end
+
 --- Broadcasting on the selected interface
 -- @param iface table containing interface information 
 local function broadcast_on_interface(iface)
@@ -118,7 +127,10 @@ local function broadcast_on_interface(iface)
 
 		local src_mac = packet.mactobin(random_mac()) 
 		local src_ip6_addr = packet.mac_to_lladdr(src_mac)
-		
+
+		local tgt_addr = packet.ip6tobin(get_random_ipv6_addr())
+		local tgt_mac = src_mac
+
 		local pkt = packet.Frame:new()
 
 		pkt.mac_src = src_mac
@@ -126,7 +138,7 @@ local function broadcast_on_interface(iface)
 		pkt.ip_bin_src = src_ip6_addr
 		pkt.ip_bin_dst = dst_ip6_addr
 		
-		local icmpv6_payload = build_neigh_redirect(src_ip6_addr, dst_ip6_addr, src_mac)
+		local icmpv6_payload = build_neigh_redirect(tgt_addr, dst_ip6_addr, tgt_mac)
 
 		pkt:build_icmpv6_header(packet.ND_REDIRECT, 0, icmpv6_payload)
 	
